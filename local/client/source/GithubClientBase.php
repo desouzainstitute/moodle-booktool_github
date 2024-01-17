@@ -303,7 +303,7 @@ abstract class GitHubClientBase
 			
 			$this->resetPage();
 		}
-			
+
 		$response = $this->doRequest($url, $method, $data);
 		
 		return $this->parseResponse($url, $response, $returnType, $expectedHttpCode, $isArray);
