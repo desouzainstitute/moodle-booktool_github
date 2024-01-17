@@ -523,7 +523,7 @@ function booktool_github_show_push_pull( $cmid, $pushed_revision, $pushed_time,
 function booktool_github_get_oauth_token( $id, $URL='/mod/book/tool/github/index.php' ) {
 
     if ( array_key_exists( "github_token", $_SESSION ) ) {
-        return $_SESSION{"github_token"};
+        return $_SESSION["github_token"];
     } else {
 
         print get_string( 'github_redirect', 'booktool_github' );
