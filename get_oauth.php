@@ -33,7 +33,7 @@ require_once(__DIR__ . '/local/PHP-OAuth2/GrantType/AuthorizationCode.php');
 // **** NEED TO PUT THESE IN A DATABASE TABLE
 //const CLIENT_ID     = 'b8340758e05e8280f5ef';
 //const CLIENT_SECRET = '805f9a89dd7c19171fd4d86ae1bd8eec6ebef19a';
-const REDIRECT_URI  = 'http://localhost:8080/moodle/mod/Book/tool/github/get_oauth.php';
+const REDIRECT_URI  = 'http://uhn41.localhost/mod/book/tool/github/get_oauth.php';
 
 // Hard-coded into the tool
 const AUTHORIZATION_ENDPOINT = 'https://github.com/login/oauth/authorize';
