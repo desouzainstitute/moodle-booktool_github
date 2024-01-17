@@ -106,3 +106,4 @@ $string['instructions_whatnext_body'] = '<ol> <li> If you have all the requireme
 
 #$string['eventbookexported'] = 'Book exported';
 #$string['exportimscp:export'] = 'Export book as IMS content package';
+$string['github:export'] = 'Export book as Github repository';
