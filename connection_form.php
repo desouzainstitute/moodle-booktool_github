@@ -37,8 +37,8 @@ class connection_form extends moodleform {
         $mform->addElement( 'hidden', 'id', $this->_customdata['id'] );
         $mform->setType( 'id', PARAM_INT );
 
-        $mform->addElement( 'hidden', 'connection_id', 
-                            $this->_customdata['connection_id'] );
+        //$mform->addElement( 'hidden', 'connection_id',
+        //                    $this->_customdata['connection_id'] );
         $mform->setType( 'connection_id', PARAM_INT );
         $mform->setDefault('connection_id', 0);
 
