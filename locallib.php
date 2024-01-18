@@ -603,8 +603,8 @@ function booktool_github_push_book( $github_client, $repo_details, $message ) {
     }
     $data['sha'] = $git_details->getSha();
 
-    $data['committer'] = array( 'name' => 'David Jones',
-                                'email' => 'davidthomjones@gmail.com' );
+    $data['committer'] = array( 'name' => 'Carlos ArceLopera',
+                                'email' => 'carlosarcelopera@catalyst-ca.net' );
 
     $request = "/repos/" . $repo_details['owner'] . "/" . $repo_details['repo'] .
                "/contents/" . rawurlencode( $repo_details['path'] );
