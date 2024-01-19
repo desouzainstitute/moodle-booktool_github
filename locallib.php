@@ -670,14 +670,14 @@ function booktool_github_prepare_book_html( $book, $result ) {
     // the book forms an article
     // - title - name of book
     // - data attributes for other database values
-    $content .= "\n" . '<article title="' . $book->name . 
-                '" data-introformat="' . $book->introformat .
-                '" data-customtitles="' . $book->customtitles . 
-                '" data-numbering="' . $book->numbering .
-                '" data-navstyle="' . $book->navstyle .  '">' . "\n" . 
+    $content .= "\n" . '<article title="' . $book->name .
+                '" dataintroformat="' . $book->introformat .
+                '" datacustomtitles="' . $book->customtitles .
+                '" datanumbering="' . $book->numbering .
+                '" datanavstyle="' . $book->navstyle .  '">' . "\n" .
        // head to contain title and intro
                 '    <head><h1>' . $book->name . "</h1>\n" .
-                '        <div>' . $book->intro . "</div>\n" .
+                "        <div class= 'intro'>" . $book->intro . "</div>\n" .
                 "    </head>\n";
 
     // create each chapter as a section within the article
@@ -716,10 +716,10 @@ function generate_chapter_html( $content, $chapter, $prevChapter, $lastChapter )
 
     // <section BODY is always needed
     $body = '    <section title="' . $chapter->title .
-             '" data-subchapter="' .  $chapter->subchapter . 
-             '" data-pagenum="' . $chapter->pagenum . 
-             '" data-contentformat="' . $chapter->contentformat . 
-             '" data-hidden="' . $chapter->hidden . '">' . "\n" .
+             '" datasubchapter="' .  $chapter->subchapter .
+             '" datapagenum="' . $chapter->pagenum .
+             '" datacontentformat="' . $chapter->contentformat .
+             '" datahidden="' . $chapter->hidden . '">' . "\n" .
              '        <head><h1>' . $chapter->title . '</h1></head>'. "\n" .
              '        <div>' . $chapter->content . '</div>' . "\n" ;
 
@@ -868,7 +868,7 @@ function booktool_github_insert_chapters_table( $repo_details, $git_book ) {
 function booktool_github_update_book_table( $repo_details, $git_book ) {
     global $DB;
 
-    $update_fields = Array( 'intro', 'name', 'introformat', 'customtitles',
+    $update_fields = Array( 'title', 'introformat', 'customtitles',
                             'numbering', 'navstyle' );
 
     // get the existing data for the book
@@ -882,11 +882,21 @@ function booktool_github_update_book_table( $repo_details, $git_book ) {
 
 //print "<h3>Changing this</h3><xmp>"; var_dump($book); print "</xmp>";
 //print "<h3>gitbook</h3><xmp>"; var_dump($git_book); print "</xmp>";
+
+//print "<h3>book Name</h3><xmp>"; var_dump($book->name); print "</xmp>";
+
+//print "<h3>gitbook title</h3><xmp>"; var_dump($git_book->book->title); print "</xmp>";
+
     // update the right bits from git
-    foreach ( $update_fields as $change ) {
-        $book->$change = $git_book->book->$change;
-    }
-    
+    //foreach ( $update_fields as $change ) {
+    //    $book->$change = $git_book->book->$change;
+    //}
+    $book->name = $git_book->book->title;
+    $book->intro = $git_book->book->intro;
+    $book->introformat = $git_book->book->dataintroformat;
+    $book->customtitles = $git_book->book->datacustomtitles;
+    $book->numbering = $git_book->book->datanumbering;
+    $book->navstyle = $git_book->book->datanavstyle;
     // update locally
     $book->revision++;// = 10 + $book->revision ;
     $book->timemodified = time();
@@ -909,28 +919,42 @@ function booktool_github_parse_file_content( $content ) {
     $book_details->chapters = Array();
 
     $dom = new DOMDocument;
-    $dom->loadHTML( $content );
+    $dom->loadHTML( $content, LIBXML_NOERROR );
+    $document = simplexml_import_dom( $dom );
 
     $xpath = new DOMXPath($dom);
+    //print "<h3>Content</h3><xmp>"; var_dump( $content ); print "</xmp>";
+    //print "<h3>DOM</h3><xmp>"; var_dump( $dom ); print "</xmp>";
+    //print "<h3>Xpath document</h3><xmp>"; var_dump( $xpath->document ); print "</xmp>";
 
     //******* GET BOOK DATA
     // - attributes other than intro
-    $book_info = $xpath->query( "//div[@class='mg-book']");
+    $book_info = $xpath->query( "//article");
+
+    //print "<h3>Book info</h3><xmp>"; var_dump( $book_info->item(0)->nodeValue); print "</xmp>";
+    //print "<h3>Book info title</h3><xmp>"; var_dump( $book_info->item(0)->attributes->getNamedItem('title')->nodeValue); print "</xmp>";
+    //print "<h3>Book info data-introformat</h3><xmp>"; var_dump( $book_info->item(0)->attributes->getNamedItem('data-introformat')->nodeValue); print "</xmp>";
+    //print "<h3>Book info data-customtitles</h3><xmp>"; var_dump( $book_info->item(0)->attributes->getNamedItem('data-customtitles')->nodeValue); print "</xmp>";
+    //print "<h3>Book info data-numbering</h3><xmp>"; var_dump( $book_info->item(0)->attributes->getNamedItem('data-numbering')->nodeValue); print "</xmp>";
+    //print "<h3>Book info data-navstyle</h3><xmp>"; var_dump( $book_info->item(0)->attributes->getNamedItem('data-navstyle')->nodeValue); print "</xmp>";
     if ( $book_info === false ) {
         return false;
     }
-
+    $i=0;
     foreach ( $book_info as $book ) {
-        $attrNames = Array( 'name', 'introformat',
-                            'customtitles', 'numbering', 'navstyle' );
+        //print "<h3>Book info</h3><xmp>"; var_dump( $book->item($i)->nodeValue); print "</xmp>";
+        $attrNames = Array( 'title', 'dataintroformat',
+                            'datacustomtitles', 'datanumbering', 'datanavstyle' );
         foreach ( $attrNames as $name ) {
-            $attribute = $book->attributes->getNamedItem( 'data-' .$name );
+            $attribute = $book->attributes->getNamedItem( $name );
             $book_details->book->$name = $attribute->nodeValue;
         }
+        //$i=$i+1;
     }
+    //print "<h3>book details</h3><xmp>"; var_dump( $book_details ); print "</xmp>";
 
     // - book_intro
-    $book_intro = $xpath->query( "//div[@class='mg-book_intro']");
+    $book_intro = $xpath->query( "//div[@class='intro']");
     if ( $book_intro === false ) {
         return false;
     }
@@ -939,32 +963,39 @@ function booktool_github_parse_file_content( $content ) {
         $book_details->book->intro = booktool_github_DOMinnerHTML( $intro );
     }
 
-//print "<xmp>"; var_dump( $book_details ); print "</xmp>";
+//print "<h3>book details intro</h3><xmp>"; var_dump( $book_details ); print "</xmp>";
 
     //******* remove the headings for chapter titles from chapter content
-    $headings = $xpath->query( "//h1[@class='mg-chapterTitle']");
-    // apparently have to do the dumy array thing for it to work
-    $remove = Array();
-    foreach ( $headings as $heading ) {
-        $remove[] = $heading;
-    }
+    $headings = $xpath->query( "//h1");
 
-    foreach ( $remove as $heading ) {
+    //print "<h3>Document </h3><xmp>"; var_dump( $document); print "</xmp>";
+    // apparently have to do the dumy array thing for it to work
+    //$remove = Array();
+
+    //foreach ( $headings as $heading ) {
+    //    $remove[] = $heading;
+    //}
+
+    foreach ( $headings as $heading ) {
         $heading->parentNode->removeChild($heading);
     }
-
+    //print "<h3>heading</h3><xmp>"; var_dump( $heading ); print "</xmp>";
+    //print "<h3>Document after deletion</h3><xmp>"; var_dump( $document); print "</xmp>";
     //********* get the chapter data
-    $chapters = $xpath->query( "//div[@class='mg-book_chapter']");
+    $chapters = $xpath->query( "//section");
+
+
+
     if ( $chapters === false ) {
         return false;
     }
 
     foreach ( $chapters as $chapter ) {
         $new_chapter = Array();
-       $attrNames = Array( 'subchapter', 'pagenum', 'hidden',
-                            'contentformat', 'title');
+       $attrNames = Array( 'title', 'datasubchapter', 'datapagenum', 'datahidden',
+                            'datacontentformat');
         foreach ( $attrNames as $name ) {
-            $attribute = $chapter->attributes->getNamedItem('data-'. $name );
+            $attribute = $chapter->attributes->getNamedItem($name );
             $new_chapter[$name] = $attribute->nodeValue;
         }
         $new_chapter['content'] = booktool_github_DOMinnerHTML( $chapter );
@@ -972,7 +1003,8 @@ function booktool_github_parse_file_content( $content ) {
         array_push( $book_details->chapters, $new_chapter );
     }
 
-//print "<xmp>"; var_dump( $book_details ); print "</xmp>";
+//print "<h3>ALL Content from GIT</h3><xmp>"; var_dump( $book_details ); print "</xmp>";
+
 
     return $book_details;
 }
@@ -986,6 +1018,9 @@ function booktool_github_DOMinnerHTML(DOMNode $element)
     {
         $innerHTML .= $element->ownerDocument->saveHTML($child);
     }
+    //Eliminate space
+    $innerHTML = trim($innerHTML);
+    //eliminate 2 div tags
 
     return $innerHTML;
 }
