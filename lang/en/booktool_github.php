@@ -27,12 +27,12 @@ defined('MOODLE_INTERNAL') || die;
 $string['pluginname'] = 'Book github link';
 $string['github'] = 'GitHub';
 
-# booktool_github_view_comments
+// Booktool_github_view_comments.
 $string['commit_details'] = 'commit details';
 
 $string['github_redirect'] = '<h3>Asking for GitHub authorisation</h3><p>To work this tool must have your permission to use your GitHub account to interact with GitHub. Heading off to GitHub to ask you for this permission.</p>';
 
-# connection form
+// Connection form.
 $string['form_empty'] = '<h2>Provide GitHub connection details</h2> <p>To work this tool requires two bits of information to work. These are:</p><ol> <li> GitHub <a href="https://help.github.com/articles/github-glossary/#repository">repository</a> <p>e.g. the name of <a href="https://github.com/djplaner/bim2">this repository</a> is <em>bim2</em></li> <li> Path to file in repository. <p>e.g. the path <a href="https://github.com/djplaner/bim2/blob/master/db/log.php">for this file</a> from the <em>bim2</em> repository is <em>db/log.php</em>.  </li> </ol>';
 $string['form_complete'] = '<h2>Current GitHub connection details</h2> <p><a href="{$a->book_url}">This book</a> is currently connected to <a href="{$a->git_url}">this file</a> in <a href="{$a->repo_url}">this GitHub repository</a>. View the file as <a href="{$a->rawgit_url}">a web page</a>.</p><p> Use the form below to change the details of this connection.</p>';
 $string['form_connection_broken'] = '<h2>No valid GitHub connection</h2> <p>The information provided in the form below is unable to form a working connection to GitHub.</p>';
@@ -73,7 +73,7 @@ $string['push_failure'] = '<h3>Push failed</h3> <p>Unable to push the content of
 $string['pull_button'] = 'Pull';
 $string['pull_form_crumb'] = 'Pull';
 $string['pull_warning'] = '<h2>Pull warning</h2> <p>If you continue with this process the current contents of <a href="{$a->book_url}">this Moodle book</a> will be replaced with the contents of <a href="{$a->git_url}">this file</a>. </p><p>Are you sure you wish to do this?</p> <p>If required, will you be able to recover the contents that are replaced? (If you have previously pushed the contents to GitHub, you can) </p>';
-$string['pull_warning_unsaved_changes'] = '<h3>Warning</h3> <p>It appears that the latest changes to <a href="{$a->book_url}this Moodle book</a> have not previously been <a href="{$a}">pushed</a> to GitHub. Suggesting some content will be lost.</p>'; 
+$string['pull_warning_unsaved_changes'] = '<h3>Warning</h3> <p>It appears that the latest changes to <a href="{$a->book_url}this Moodle book</a> have not previously been <a href="{$a}">pushed</a> to GitHub. Suggesting some content will be lost.</p>';
 $string['pull_success'] = '<h3>Pull succeeded</h3> <p>The content of <a href="{$a->book_url}">this book</a> has been replaced by the content of <a href="{$a->git_url}">this file</a> from <a href="{$a->repo_url}">this GitHub repository</a>.</p><p style="text-align:center"><strong>Return to:</strong> <a href="{$a->tool_url}">GitHub Tool</a> | <a href="{$a->book_url}">the Book</a></p>';
 $string['pull_failure'] = '<h3>Pull failed</h3> <p>Unable to replace the content of <a href="{$a->book_url}">this book</a> with the contents of <a href="{$a->git_url}">this file</a> from <a href="{$a->repo_url}">this GitHub repository</a>.</p><p>Check that:</p><ol> <li> Your <a href="{$a->git_user_url}">github account</a> has permission to pull content from <a href="{$a->git_url}">this file</a> in <a href="{$a->repo_url}">this GitHub repository</a>. </li> </ol><p style="text-align:center"><strong>Return to:</strong> <a href="{$a->tool_url}">GitHub Tool</a> | <a href="{$a->book_url}">the Book</a></p>';
 
@@ -83,27 +83,24 @@ $string['pull_failure'] = '<h3>Pull failed</h3> <p>Unable to replace the content
  */
 
 $string['instructions_what_header'] = '<h2>What?</h2>';
-$string['instructions_what_body'] ='<p>This tool allows the content of this <a href="https://docs.moodle.org/29/en/Book_module">Moodle Book</a> to linked to a single file within a <a href="https://guides.github.com/activities/hello-world/#repository">GitHub repository</a>. This link allows the content of the Book to be based on the content of the file in the GitHub repository.</p>';
+$string['instructions_what_body'] = '<p>This tool allows the content of this <a href="https://docs.moodle.org/29/en/Book_module">Moodle Book</a> to linked to a single file within a <a href="https://guides.github.com/activities/hello-world/#repository">GitHub repository</a>. This link allows the content of the Book to be based on the content of the file in the GitHub repository.</p>';
 
 $string['instructions_why_header'] = '<h2>Why?</h2>';
-$string['instructions_why_body'] = '<p>Doing this enhances the Book with features provided by <a href="http://github.com/">GitHub</a>, including:</p><ul> 
+$string['instructions_why_body'] = '<p>Doing this enhances the Book with features provided by <a href="http://github.com/">GitHub</a>, including:</p><ul>
    <li> version control </li>
   <li> issue tracking </li>
   <li> open sharing beyond the LMS </li> </ul>';
 
 $string['instructions_requirements_header'] = '<h2>Requirements?</h2>';
 $string['instructions_requirements_body'] = '<p>Before you can use the GitHub tool with the Book module, you will need:</p><ol> <li> A <a href="https://github.com/join">GitHub account</a>. </li>
-    <li> A <a href="https://help.github.com/articles/create-a-repo/">GitHub repository</a> 
+    <li> A <a href="https://help.github.com/articles/create-a-repo/">GitHub repository</a>
 <p>The repository can be a new repository you created, or an existing repository. The repository can be owned by anyone, but the GithHub account you use will need to have permission to commit changes to the repository. You may need to <a href="https://help.github.com/articles/fork-a-repo/">fork</a> an existing repository to get the necessary permissions.</p>
- </li> 
-    <li> The path to a specific file within the respository. 
+ </li>
+    <li> The path to a specific file within the respository.
 <p>The path indiciates which file within the repository will be connected to t
-he Book activity.</p></li></ol>' ;
+he Book activity.</p></li></ol>';
 
 $string['instructions_whatnext_header'] = '<h2>What next?</h2>';
 $string['instructions_whatnext_body'] = '<ol> <li> If you have all the requirements listed above, then <a href="{$a->git_url}">click here</a> to start using the GitHub book tool;<p>Your first task will be to login to your GitHub account.</p> </li> <li> If you want to wait till later, <a href="{$a->book_url}">return to the book</a>. </li> </ol> ';
 
-
-#$string['eventbookexported'] = 'Book exported';
-#$string['exportimscp:export'] = 'Export book as IMS content package';
 $string['github:export'] = 'Export book as Github repository';
