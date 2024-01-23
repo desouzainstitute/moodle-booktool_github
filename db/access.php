@@ -24,9 +24,9 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$capabilities = array(
-    'booktool/github:export' => array(
+$capabilities = [
+    'booktool/github:export' => [
         'captype' => 'read',
-        'contextlevel' => CONTEXT_MODULE
-    ),
-);
+        'contextlevel' => CONTEXT_MODULE,
+    ],
+];
