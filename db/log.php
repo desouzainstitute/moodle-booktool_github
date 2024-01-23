@@ -24,6 +24,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$logs = array(
-    array('module'=>'book', 'action'=>'github', 'mtable'=>'book', 'field'=>'name')
-);
+$logs = [
+    ['module' => 'book', 'action' => 'github', 'mtable' => 'book', 'field' => 'name'],
+];
