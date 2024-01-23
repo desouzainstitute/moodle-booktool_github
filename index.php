@@ -25,24 +25,23 @@
 require(dirname(__FILE__).'/../../../../config.php');
 require_once(dirname(__FILE__).'/locallib.php');
 require_once($CFG->dirroot.'/mod/book/locallib.php');
-//require_once($CFG->libdir.'/filelib.php');
 
 require_once( __DIR__ . '/connection_form.php' );
 
-// *** can this be put into a support function?
-$cmid = required_param('id', PARAM_INT);           // Course Module ID
+// Can this be put into a support function?
+$cmid = required_param('id', PARAM_INT);           // Course Module ID.
 
 $instructions = optional_param( 'instructions', 0, PARAM_INT);
 
 
 $cm = get_coursemodule_from_id('book', $cmid, 0, false, MUST_EXIST);
-$course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
-$book = $DB->get_record('book', array('id'=>$cm->instance), '*', MUST_EXIST); 
+$course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
+$book = $DB->get_record('book', ['id' => $cm->instance], '*', MUST_EXIST);
 
 $PAGE->set_url('/mod/book/tool/github/index.php');
-$PAGE->navbar->add( 'GitHub tool', new moodle_url( '/mod/book/tool/github/index.php', array( 'id' => $cmid) ));
+$PAGE->navbar->add( 'GitHub tool', new moodle_url( '/mod/book/tool/github/index.php', ['id' => $cmid] ));
 
-$book_url = new moodle_url( '/mod/book/view.php', array('id'=>$cmid));
+$book_url = new moodle_url( '/mod/book/view.php', ['id' => $cmid]);
 
 require_login($course, false, $cm);
 
@@ -52,19 +51,15 @@ require_capability('mod/book:edit', $context);
 require_capability('mod/book:viewhiddenchapters', $context);
 require_capability( 'booktool/github:export', $context );
 
-#************** Need to think about what events get added
-#\booktool_exportimscp\event\book_exported::create_from_book($book, $context)->trigger();
+// Need to think about what events get added.
+// Booktool_exportimscp\event\book_exported::create_from_book($book, $context)->trigger();!
 
-#--- show the header and initial display 
+// Show the header and initial display.
 
-//*****
-// - has this book been configured to use github?
+// Has this book been configured to use github?
 
 $repo_details = booktool_github_get_repo_details( $book->id );
-$repo_details['id']=$cmid;
-
-// test the session variable "seen_git_instructions"
-//unset( $_SESSION['github_seen_instructions'] );
+$repo_details['id'] = $cmid;
 
 if ( $instructions > 0 ) {
     $_SESSION['github_seen_instructions'] = 1;
@@ -72,47 +67,46 @@ if ( $instructions > 0 ) {
 
 echo $OUTPUT->header();
 
-// if the instructions haven't been seen, display some basic info
+// If the instructions haven't been seen, display some basic info.
 $seen_instructions = array_key_exists( "github_seen_instructions", $_SESSION );
 if ( ! $repo_details && ! $seen_instructions ) {
     booktool_github_show_instructions( $cmid );
     echo $OUTPUT->footer();
     die;
 }
-    
-// Ready to use github connection
 
-// get github client and github user details via oauth
+// Ready to use github connection.
+
+// Get github client and github user details via oauth.
 list( $github_client, $github_user ) = booktool_github_get_client( $cmid );
 
-// couldn't authenticate with github, probably never happen
-// **** TIDY UP
+// Couldn't authenticate with github, probably never happen.
+// TIDY UP.
 if ( ! $github_client ) {
     print '<h1> Cannot authenticate with github</h1>';
 
     echo $OUTPUT->footer();
 
     die;
-} 
+}
 
-// add the "owner" of this connection as the username from oAuth
+// Add the "owner" of this connection as the username from oAuth.
 $repo_details['owner'] = $github_user->getLogin();
 
-// if no repo yet configured, repo_details[ repo|path ] will not exist
+// If no repo yet configured, repo_details[ repo|path ] will not exist.
 
 $commits = false;
 
-//*************************************
-// Start showing the form
+// Start showing the form.
 
-$form = new connection_form( null, array( 'id' => $cmid ) );
+$form = new connection_form( null, ['id' => $cmid ] );
 
-// assume it's valid
+// Assume it's valid.
 $validConnection = true;
 
 if ( $fromForm = $form->get_data() ) {
-    // check to see if the repo/path have actually changed
-    //  repo_details should have the existing data
+    // Check to see if the repo/path have actually changed.
+    // Repo_details should have the existing data.
 
     $repoDefault = get_string( 'repo_form_default', 'booktool_github');
     $pathDefault = get_string( 'repo_path_default', 'booktool_github');
@@ -120,7 +114,7 @@ if ( $fromForm = $form->get_data() ) {
     if ( strcmp( $fromForm->repo, $repoDefault ) !== 0 &&
          strcmp( $fromForm->path, $pathDefault ) !== 0 ) {
 
-        if ( strcmp( $fromForm->repo, $repo_details['repo']) !== 0 || 
+        if ( strcmp( $fromForm->repo, $repo_details['repo']) !== 0 ||
              strcmp( $fromForm->path, $repo_details['path']) !== 0 ) {
 
             $change = true;
@@ -135,47 +129,46 @@ if ( $fromForm = $form->get_data() ) {
                                    $repo_details );
                 $change = false;
                 $validConnection = false;
-                // - does the repo existing on github ?? create it??
-                // *** maybe add this later - would require more work
-                // create repo https://developer.github.com/v3/repos/#create
-                // POST /user/repos 
+                // Does the repo existing on github ?? create it??
+                // Maybe add this later - would require more work
+                // Create repo https://developer.github.com/v3/repos/#create
+                // POST /user/repos.
 
             } else if ( ! booktool_github_path_exists($github_client, $repo_details)) {
-                // file no exists, so create an empty one
+                // File no exists, so create an empty one.
                 if ( ! booktool_github_create_new_file( $github_client, $repo_details) ) {
                     print get_string( 'form_no_create_file', 'booktool_github',
                                       $repo_details );
                     $change = false;
                     $validConnection = false;
-                }  else {
-    print "<h3>Able to create file </h3>";
+                } else {
+                    print "<h3>Able to create file </h3>";
                 }
             }
-            //****** where we save the data
+            // Where we save the data.
             if ( $change ) {
                 if ( ! booktool_github_put_repo_details( $repo_details ) ) {
                     print "<h1> updateing databse stuff</h1>";
                     print get_string( 'form_no_database_write', 'booktool_github' );
-                } 
+                }
             }
 
-            // if all ok, save it to the database
-        } else { // didn't change the existing data
+            // If all ok, save it to the database.
+        } else { // Didn't change the existing data.
             print "<h1>didn't change the data</h1>";
-            print "<xmp> " ;
+            print "<xmp> ";
             var_dump( $fromForm );
             print "</xmp>";
         }
-    } else {  // didn't change the default form data
+    } else {  // Didn't change the default form data.
         print get_string( 'form_no_change_default_error', 'booktool_github' );
     } 
 
 
-        // **** may just continue on at this stage
+        // May just continue on at this stage.
 } 
 
-//*****************************************************************
-// now show the rest of the form
+// Now show the rest of the form.
 
 $git_url = 'http://github.com/' . $repo_details['owner'] . '/' .
             $repo_details['repo'].'/blob/master/'.$repo_details['path'];
@@ -185,24 +178,20 @@ $git_user_url = 'http://github.com/' . $repo_details['owner'];
 $rawgit_url = 'https://cdn.rawgit.com/' . $repo_details['owner'] . '/' .
               $repo_details['repo'] . '/master/' . $repo_details['path'] ;
 
-$urls = Array( 'book_url' => $book_url->out(), 'git_url' => $git_url, 
+$urls = ['book_url' => $book_url->out(), 'git_url' => $git_url,
                'repo_url' => $repo_url,'git_user_url' => $git_user_url,
-               'rawgit_url' => $rawgit_url );
+               'rawgit_url' => $rawgit_url ];
 
 if ( ! array_key_exists( 'repo', $repo_details ) ) {
         print get_string( 'form_empty', 'booktool_github' );
     } else if ( $validConnection ) {
-
         print get_string( 'form_complete', 'booktool_github', $urls );
-/*                          'http://github.com/' . $repo_details['owner'] . 
-                          '/' . $repo_details['repo'] . '/blob/master/' .
-                          $repo_details['path'] ); */
     } else {
         print get_string( 'form_connection_broken', 'booktool_github' );
     }
 
-    // *** how does this handle the no change stuff?
-    //$form = new connection_form( null, $repo_details );
+    // How does this handle the no change stuff?
+    // T$form = new connection_form( null, $repo_details );!
     $form->set_data( $repo_details );
     $form->display();
 
