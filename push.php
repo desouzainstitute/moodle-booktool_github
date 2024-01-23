@@ -28,16 +28,16 @@ require_once($CFG->dirroot.'/mod/book/locallib.php');
 
 require_once( __DIR__ . '/push_form.php' );
 
-// *** can this be put into a support function?
-$cmid = required_param('id', PARAM_INT);           // Course Module ID
+// Can this be put into a support function?
+$cmid = required_param('id', PARAM_INT);           // Course Module ID.
 
 $cm = get_coursemodule_from_id('book', $cmid, 0, false, MUST_EXIST);
 
-$course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
-$book = $DB->get_record('book', array('id'=>$cm->instance), '*', MUST_EXIST); 
+$course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
+$book = $DB->get_record('book', ['id' => $cm->instance], '*', MUST_EXIST);
 
-$tool_url = new moodle_url( '/mod/book/tool/github/index.php', array( 'id' => $cmid));
-$book_url = new moodle_url( '/mod/book/view.php', array('id'=>$cmid));
+$tool_url = new moodle_url( '/mod/book/tool/github/index.php', ['id' => $cmid]);
+$book_url = new moodle_url( '/mod/book/view.php', ['id' => $cmid]);
 
 $PAGE->set_url('/mod/book/tool/github/push.php');
 
@@ -50,69 +50,67 @@ require_capability('mod/book:viewhiddenchapters', $context);
 require_capability( 'booktool/github:export', $context );
 
 $PAGE->navbar->add( 'GitHub tool', $tool_url );
-$PAGE->navbar->add( get_string('push_form_crumb','booktool_github'), 
+$PAGE->navbar->add( get_string('push_form_crumb', 'booktool_github'),
                     new moodle_url( '/mod/book/tool/github/push.php',
-                                    array('id'=>$cmid) ));
+                                    ['id' => $cmid]));
 
-#************** Need to think about what events get added
-#\booktool_exportimscp\event\book_exported::create_from_book($book, $context)->trigger();
+// Need to think about what events get added.
+// \booktool_exportimscp\event\book_exported::create_from_book($book, $context)->trigger();!
 
-#--- show the header and initial display 
+// Show the header and initial display.
 
-//*****
-// - has this book been configured to use github?
+// Has this book been configured to use github?
 
 $repo_details = booktool_github_get_repo_details( $book->id );
 
 echo $OUTPUT->header();
 
-// get github client and github user details via oauth
+// Get github client and github user details via oauth.
 list( $github_client, $github_user ) = booktool_github_get_client( $cmid );
 
-// couldn't authenticate with github, probably never happen
-// **** TIDY UP
+// Couldn't authenticate with github, probably never happen.
+// TIDY UP.
 if ( ! $github_client ) {
     print '<h1> Cannot authenticate with github</h1>';
 
     echo $OUTPUT->footer();
 
     die;
-} 
+}
 
-// add the "owner" of this connection as the username from oAuth
+// Add the "owner" of this connection as the username from oAuth.
 $repo_details['owner'] = $github_user->getLogin();
 
-//*************************************
-// Start showing the form
+// Start showing the form.
 
-$form = new push_form( null, array( 'id' => $cmid ));
+$form = new push_form( null, ['id' => $cmid ]);
 
-// Build params for messages
+// Build params for messages.
 $git_url = 'http://github.com/' . $repo_details['owner'] . '/' .
             $repo_details['repo'] . '/blob/master/' . $repo_details['path'];
 $repo_url = 'http://github.com/' . $repo_details['owner'] . '/' .
             $repo_details['repo'] . '//' ;
 $git_user_url = 'http://github.com/' . $repo_details['owner'];
 
-$urls = Array( 'book_url' => $book_url->out(), 'tool_url'=>$tool_url->out(),
+$urls = ['book_url' => $book_url->out(), 'tool_url' => $tool_url->out(),
                 'git_url' => $git_url, 'repo_url' => $repo_url,
-                'git_user_url' => $git_user_url );
+                'git_user_url' => $git_user_url ];
 
 
 if ( $fromForm = $form->get_data() ) {
-    // user has submitted the form, they want to do the push
+    // User has submitted the form, they want to do the push.
 
-    // grab the book content and combine into a single file
+    // Grab the book content and combine into a single file.
 
-    // commit the file
+    // Commit the file.
     if ( booktool_github_push_book( $github_client, $repo_details,
                                     $fromForm->message ) ) {
-        print get_string('push_success','booktool_github',$urls);
+        print get_string('push_success', 'booktool_github', $urls);
     } else {
-        print get_string('push_failure','booktool_github',$urls);
+        print get_string('push_failure', 'booktool_github', $urls);
     }
 } else {
-    // just display the initial warning
+    // Just display the initial warning.
     print get_string( 'push_warning', 'booktool_github', $urls );
 
     $form->display();
