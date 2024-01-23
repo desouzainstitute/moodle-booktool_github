@@ -22,33 +22,33 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// define the form used to handle pushing book content to github
-
+// Define the form used to handle pushing book content to github.
+defined('MOODLE_INTERNAL') || die;
 require_once("$CFG->libdir/formslib.php");
- 
+
 class push_form extends moodleform {
-    //Add elements to form
+    // Add elements to form.
     public function definition() {
         global $CFG;
- 
-        $mform = $this->_form; 
+
+        $mform = $this->_form;
 
         $mform->addElement( 'hidden', 'id', $this->_customdata['id'] );
         $mform->setType( 'id', PARAM_INT );
 
         $mform->addElement( 'text', 'message',
-                            get_string('push_form_message','booktool_github'));
+                            get_string('push_form_message', 'booktool_github'));
         $mform->setType('message', PARAM_NOTAGS );
         $mform->setDefault('message', get_string('push_form_default_message',
                                                  'booktool_github' ));
 
-        $button = array();
-        $button[] = &$mform->createElement('submit','submitbutton', get_string('push_button', 'booktool_github'));
-        $mform->addGroup($button,'buttonar', '', array(' '), false);
+        $button = [];
+        $button[] = &$mform->createElement('submit', 'submitbutton', get_string('push_button', 'booktool_github'));
+        $mform->addGroup($button, 'buttonar', '', [' '], false);
         $mform->closeHeaderBefore('buttonar');
     }
-    //Custom validation should be added here
-    function validation($data, $files) {
-        return array();
+    // Custom validation should be added here.
+    public function validation($data, $files) {
+        return [];
     }
 }
