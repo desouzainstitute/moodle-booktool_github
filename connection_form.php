@@ -22,41 +22,39 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// define the form used to define the github repository and path for
-// the github connection
-
+// Define the form used to define the github repository and path for
+// the github connection.
+defined('MOODLE_INTERNAL') || die;
 require_once("$CFG->libdir/formslib.php");
- 
+
 class connection_form extends moodleform {
-    //Add elements to form
+    // Add elements to form.
     public function definition() {
         global $CFG;
- 
-        $mform = $this->_form; 
+
+        $mform = $this->_form;
 
         $mform->addElement( 'hidden', 'id', $this->_customdata['id'] );
         $mform->setType( 'id', PARAM_INT );
 
-        //$mform->addElement( 'hidden', 'connection_id',
-        //                    $this->_customdata['connection_id'] );
         $mform->setType( 'connection_id', PARAM_INT );
         $mform->setDefault('connection_id', 0);
 
-        // details of the repo
-        $mform->addElement('text', 'repo', 
-                            get_string('repo_form_element', 'booktool_github')); 
-        $mform->setType('repo', PARAM_NOTAGS); 
+        // Details of the repo.
+        $mform->addElement('text', 'repo',
+                            get_string('repo_form_element', 'booktool_github'));
+        $mform->setType('repo', PARAM_NOTAGS);
         $mform->setDefault('repo', get_string( 'repo_form_default', 'booktool_github'));
 
-        $mform->addElement('text', 'path', 
-                            get_string('path_form_element', 'booktool_github')); 
-        $mform->setType('path', PARAM_NOTAGS); 
-        $mform->setDefault('path', get_string( 'repo_path_default', 'booktool_github')); 
+        $mform->addElement('text', 'path',
+                            get_string('path_form_element', 'booktool_github'));
+        $mform->setType('path', PARAM_NOTAGS);
+        $mform->setDefault('path', get_string( 'repo_path_default', 'booktool_github'));
 
         $this->add_action_buttons();
     }
-    //Custom validation should be added here
-    function validation($data, $files) {
-        return array();
+    // Custom validation should be added here.
+    public function validation($data, $files) {
+        return [];
     }
 }
