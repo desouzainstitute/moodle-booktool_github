@@ -36,8 +36,8 @@ $cm = get_coursemodule_from_id('book', $cmid, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
 $book = $DB->get_record('book', ['id' => $cm->instance], '*', MUST_EXIST);
 
-$tool_url = new moodle_url( '/mod/book/tool/github/index.php', ['id' => $cmid]);
-$book_url = new moodle_url( '/mod/book/view.php', ['id' => $cmid]);
+$toolurl = new moodle_url( '/mod/book/tool/github/index.php', ['id' => $cmid]);
+$bookurl = new moodle_url( '/mod/book/view.php', ['id' => $cmid]);
 
 $PAGE->set_url('/mod/book/tool/github/push.php');
 
@@ -49,7 +49,7 @@ require_capability('mod/book:edit', $context);
 require_capability('mod/book:viewhiddenchapters', $context);
 require_capability( 'booktool/github:export', $context );
 
-$PAGE->navbar->add( 'GitHub tool', $tool_url );
+$PAGE->navbar->add( 'GitHub tool', $toolurl );
 $PAGE->navbar->add( get_string('push_form_crumb', 'booktool_github'),
                     new moodle_url( '/mod/book/tool/github/push.php',
                                     ['id' => $cmid]));
@@ -61,16 +61,16 @@ $PAGE->navbar->add( get_string('push_form_crumb', 'booktool_github'),
 
 // Has this book been configured to use github?
 
-$repo_details = booktool_github_get_repo_details( $book->id );
+$repodetails = booktool_github_get_repo_details( $book->id );
 
 echo $OUTPUT->header();
 
 // Get github client and github user details via oauth.
-list( $github_client, $github_user ) = booktool_github_get_client( $cmid );
+list( $githubclient, $githubuser ) = booktool_github_get_client( $cmid );
 
 // Couldn't authenticate with github, probably never happen.
 // TIDY UP.
-if ( ! $github_client ) {
+if ( ! $githubclient ) {
     print '<h1> Cannot authenticate with github</h1>';
 
     echo $OUTPUT->footer();
@@ -79,32 +79,32 @@ if ( ! $github_client ) {
 }
 
 // Add the "owner" of this connection as the username from oAuth.
-$repo_details['owner'] = $github_user->getLogin();
+$repodetails['owner'] = $githubuser->getLogin();
 
 // Start showing the form.
 
 $form = new push_form( null, ['id' => $cmid ]);
 
 // Build params for messages.
-$git_url = 'http://github.com/' . $repo_details['owner'] . '/' .
-            $repo_details['repo'] . '/blob/master/' . $repo_details['path'];
-$repo_url = 'http://github.com/' . $repo_details['owner'] . '/' .
-            $repo_details['repo'] . '//' ;
-$git_user_url = 'http://github.com/' . $repo_details['owner'];
+$giturl = 'http://github.com/' . $repodetails['owner'] . '/' .
+            $repodetails['repo'] . '/blob/master/' . $repodetails['path'];
+$repourl = 'http://github.com/' . $repodetails['owner'] . '/' .
+            $repodetails['repo'] . '//';
+$gituserurl = 'http://github.com/' . $repodetails['owner'];
 
-$urls = ['book_url' => $book_url->out(), 'tool_url' => $tool_url->out(),
-                'git_url' => $git_url, 'repo_url' => $repo_url,
-                'git_user_url' => $git_user_url ];
+$urls = ['book_url' => $bookurl->out(), 'tool_url' => $toolurl->out(),
+                'git_url' => $giturl, 'repo_url' => $repourl,
+                'git_user_url' => $gituserurl ];
 
 
-if ( $fromForm = $form->get_data() ) {
+if ( $fromform = $form->get_data() ) {
     // User has submitted the form, they want to do the push.
 
     // Grab the book content and combine into a single file.
 
     // Commit the file.
-    if ( booktool_github_push_book( $github_client, $repo_details,
-                                    $fromForm->message ) ) {
+    if ( booktool_github_push_book( $githubclient, $repodetails,
+                                    $fromform->message ) ) {
         print get_string('push_success', 'booktool_github', $urls);
     } else {
         print get_string('push_failure', 'booktool_github', $urls);
