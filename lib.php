@@ -37,13 +37,13 @@ function booktool_github_extend_settings_navigation(settings_navigation $setting
 
     if (has_capability('booktool/github:export', $PAGE->cm->context)) {
         $id = $PAGE->cm->id;
-        $url = new moodle_url('/mod/book/tool/github/index.php', 
-                              array('id'=>$id));
-        $icon = new pix_icon('github', '', 'booktool_github', 
-                              array('class'=>'icon'));
+        $url = new moodle_url('/mod/book/tool/github/index.php',
+                              ['id' => $id]);
+        $icon = new pix_icon('github', '', 'booktool_github',
+                              ['class' => 'icon']);
         $string = get_string( 'github', 'booktool_github' );
 
-        $node->add( $string, $url, navigation_node::TYPE_SETTING, null, null, 
+        $node->add( $string, $url, navigation_node::TYPE_SETTING, null, null,
                     $icon);
     }
 }
