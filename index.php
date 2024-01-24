@@ -41,7 +41,7 @@ $book = $DB->get_record('book', ['id' => $cm->instance], '*', MUST_EXIST);
 $PAGE->set_url('/mod/book/tool/github/index.php');
 $PAGE->navbar->add( 'GitHub tool', new moodle_url( '/mod/book/tool/github/index.php', ['id' => $cmid] ));
 
-$book_url = new moodle_url( '/mod/book/view.php', ['id' => $cmid]);
+$bookurl = new moodle_url( '/mod/book/view.php', ['id' => $cmid]);
 
 require_login($course, false, $cm);
 
@@ -58,8 +58,8 @@ require_capability( 'booktool/github:export', $context );
 
 // Has this book been configured to use github?
 
-$repo_details = booktool_github_get_repo_details( $book->id );
-$repo_details['id'] = $cmid;
+$repodetails = booktool_github_get_repo_details( $book->id );
+$repodetails['id'] = $cmid;
 
 if ( $instructions > 0 ) {
     $_SESSION['github_seen_instructions'] = 1;
@@ -68,8 +68,8 @@ if ( $instructions > 0 ) {
 echo $OUTPUT->header();
 
 // If the instructions haven't been seen, display some basic info.
-$seen_instructions = array_key_exists( "github_seen_instructions", $_SESSION );
-if ( ! $repo_details && ! $seen_instructions ) {
+$seeninstructions = array_key_exists( "github_seen_instructions", $_SESSION );
+if ( ! $repodetails && ! $seeninstructions ) {
     booktool_github_show_instructions( $cmid );
     echo $OUTPUT->footer();
     die;
@@ -78,11 +78,11 @@ if ( ! $repo_details && ! $seen_instructions ) {
 // Ready to use github connection.
 
 // Get github client and github user details via oauth.
-list( $github_client, $github_user ) = booktool_github_get_client( $cmid );
+list( $githubclient, $githubuser ) = booktool_github_get_client( $cmid );
 
 // Couldn't authenticate with github, probably never happen.
 // TIDY UP.
-if ( ! $github_client ) {
+if ( ! $githubclient ) {
     print '<h1> Cannot authenticate with github</h1>';
 
     echo $OUTPUT->footer();
@@ -91,7 +91,7 @@ if ( ! $github_client ) {
 }
 
 // Add the "owner" of this connection as the username from oAuth.
-$repo_details['owner'] = $github_user->getLogin();
+$repodetails['owner'] = $githubuser->getLogin();
 
 // If no repo yet configured, repo_details[ repo|path ] will not exist.
 
@@ -102,52 +102,52 @@ $commits = false;
 $form = new connection_form( null, ['id' => $cmid ] );
 
 // Assume it's valid.
-$validConnection = true;
+$validconnection = true;
 
-if ( $fromForm = $form->get_data() ) {
+if ( $fromform = $form->get_data() ) {
     // Check to see if the repo/path have actually changed.
     // Repo_details should have the existing data.
 
-    $repoDefault = get_string( 'repo_form_default', 'booktool_github');
-    $pathDefault = get_string( 'repo_path_default', 'booktool_github');
+    $repodefault = get_string( 'repo_form_default', 'booktool_github');
+    $pathdefault = get_string( 'repo_path_default', 'booktool_github');
 
-    if ( strcmp( $fromForm->repo, $repoDefault ) !== 0 &&
-         strcmp( $fromForm->path, $pathDefault ) !== 0 ) {
+    if ( strcmp( $fromform->repo, $repodefault ) !== 0 &&
+         strcmp( $fromform->path, $pathdefault ) !== 0 ) {
 
-        if ( strcmp( $fromForm->repo, $repo_details['repo']) !== 0 ||
-             strcmp( $fromForm->path, $repo_details['path']) !== 0 ) {
+        if ( strcmp( $fromform->repo, $repodetails['repo']) !== 0 ||
+             strcmp( $fromform->path, $repodetails['path']) !== 0 ) {
 
             $change = true;
 
-            $repo_details['repo'] = trim( $fromForm->repo );
-            $repo_details['path'] = trim( $fromForm->path );
-            $repo_details['bookid'] = $book->id;
-            $repo_details['id'] = trim( $fromForm->id );
+            $repodetails['repo'] = trim( $fromform->repo );
+            $repodetails['path'] = trim( $fromform->path );
+            $repodetails['bookid'] = $book->id;
+            $repodetails['id'] = trim( $fromform->id );
 
-            if ( ! booktool_github_repo_exists($github_client, $repo_details) ) {
+            if ( ! booktool_github_repo_exists($githubclient, $repodetails) ) {
                 print get_string( 'form_repo_not_exist_error', 'booktool_github',
-                                   $repo_details );
+                                   $repodetails );
                 $change = false;
-                $validConnection = false;
+                $validconnection = false;
                 // Does the repo existing on github ?? create it??
                 // Maybe add this later - would require more work
                 // Create repo https://developer.github.com/v3/repos/#create
                 // POST /user/repos.
 
-            } else if ( ! booktool_github_path_exists($github_client, $repo_details)) {
+            } else if ( ! booktool_github_path_exists($githubclient, $repodetails)) {
                 // File no exists, so create an empty one.
-                if ( ! booktool_github_create_new_file( $github_client, $repo_details) ) {
+                if ( ! booktool_github_create_new_file( $githubclient, $repodetails) ) {
                     print get_string( 'form_no_create_file', 'booktool_github',
-                                      $repo_details );
+                                      $repodetails );
                     $change = false;
-                    $validConnection = false;
+                    $validconnection = false;
                 } else {
                     print "<h3>Able to create file </h3>";
                 }
             }
             // Where we save the data.
             if ( $change ) {
-                if ( ! booktool_github_put_repo_details( $repo_details ) ) {
+                if ( ! booktool_github_put_repo_details( $repodetails ) ) {
                     print "<h1> updateing databse stuff</h1>";
                     print get_string( 'form_no_database_write', 'booktool_github' );
                 }
@@ -157,47 +157,47 @@ if ( $fromForm = $form->get_data() ) {
         } else { // Didn't change the existing data.
             print "<h1>didn't change the data</h1>";
             print "<xmp> ";
-            var_dump( $fromForm );
+            var_dump( $fromform );
             print "</xmp>";
         }
     } else {  // Didn't change the default form data.
         print get_string( 'form_no_change_default_error', 'booktool_github' );
-    } 
+    }
 
 
         // May just continue on at this stage.
-} 
+}
 
 // Now show the rest of the form.
 
-$git_url = 'http://github.com/' . $repo_details['owner'] . '/' .
-            $repo_details['repo'].'/blob/master/'.$repo_details['path'];
-$repo_url = 'http://github.com/' . $repo_details['owner'] . '/' .
-            $repo_details['repo'] . '//' ;
-$git_user_url = 'http://github.com/' . $repo_details['owner'];
-$rawgit_url = 'https://cdn.rawgit.com/' . $repo_details['owner'] . '/' .
-              $repo_details['repo'] . '/master/' . $repo_details['path'] ;
+$giturl = 'http://github.com/' . $repodetails['owner'] . '/' .
+            $repodetails['repo'].'/blob/master/'.$repodetails['path'];
+$repourl = 'http://github.com/' . $repodetails['owner'] . '/' .
+            $repodetails['repo'] . '//';
+$gituserurl = 'http://github.com/' . $repodetails['owner'];
+$rawgiturl = 'https://cdn.rawgit.com/' . $repodetails['owner'] . '/' .
+              $repodetails['repo'] . '/master/' . $repodetails['path'];
 
-$urls = ['book_url' => $book_url->out(), 'git_url' => $git_url,
-               'repo_url' => $repo_url,'git_user_url' => $git_user_url,
-               'rawgit_url' => $rawgit_url ];
+$urls = ['book_url' => $bookurl->out(), 'git_url' => $giturl,
+               'repo_url' => $repourl, 'git_user_url' => $gituserurl,
+               'rawgit_url' => $rawgiturl ];
 
-if ( ! array_key_exists( 'repo', $repo_details ) ) {
-        print get_string( 'form_empty', 'booktool_github' );
-    } else if ( $validConnection ) {
-        print get_string( 'form_complete', 'booktool_github', $urls );
-    } else {
-        print get_string( 'form_connection_broken', 'booktool_github' );
-    }
+if ( ! array_key_exists( 'repo', $repodetails ) ) {
+    print get_string( 'form_empty', 'booktool_github' );
+} else if ( $validconnection ) {
+    print get_string( 'form_complete', 'booktool_github', $urls );
+} else {
+    print get_string( 'form_connection_broken', 'booktool_github' );
+}
 
-    // How does this handle the no change stuff?
-    // T$form = new connection_form( null, $repo_details );!
-    $form->set_data( $repo_details );
-    $form->display();
+// How does this handle the no change stuff?
+// T$form = new connection_form( null, $repodetails );!
+$form->set_data( $repodetails );
+$form->display();
 
-    if ( $validConnection ) {
-        booktool_github_view_status( $cmid, $github_client, $repo_details, $urls );
-    }
+if ( $validconnection ) {
+    booktool_github_view_status( $cmid, $githubclient, $repodetails, $urls );
+}
 
 echo $OUTPUT->footer();
 
