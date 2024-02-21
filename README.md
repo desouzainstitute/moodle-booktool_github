@@ -7,7 +7,7 @@ Initial development is part of the Moodle open book project - https://davidtjone
 
 **Current Status**
 
-Is basically working. Will push/pull content for a Moodle book from a github repository.
+Is basically working. Will push/pull content for a Moodle book from a github repository. Install the plugin at /mod/book/tool/github
 
 The interface is ugly and incomplete.
 
