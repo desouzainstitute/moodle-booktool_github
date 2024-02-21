@@ -30,7 +30,7 @@ require_once(__DIR__ . '/local/PHP-OAuth2/Client.php');
 require_once(__DIR__ . '/local/PHP-OAuth2/GrantType/IGrantType.php');
 require_once(__DIR__ . '/local/PHP-OAuth2/GrantType/AuthorizationCode.php');
 
-const REDIRECT_URI  = 'http://uhn41.localhost/mod/book/tool/github/get_oauth.php';
+const REDIRECT_URI  = 'https://learning-staging.desouzainstitute.com/mod/book/tool/github/get_oauth.php';
 
 // Hard-coded into the tool.
 const AUTHORIZATION_ENDPOINT = 'https://github.com/login/oauth/authorize';
