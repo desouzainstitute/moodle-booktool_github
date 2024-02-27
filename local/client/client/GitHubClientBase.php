@@ -348,7 +348,7 @@ abstract class GitHubClientBase
 			
 		foreach(explode("\r\n", $response) as $line)
 		{
-			if (strpos($line, 'HTTP/2') === 0)
+			if (strpos($line, 'HTTP/2') === 0 or strpos($line, 'HTTP/1.1') === 0)
 			{
 				$lineParts = explode(' ', $line);
 				$status = intval($lineParts[1]);
