@@ -189,7 +189,7 @@ class GitHubRepos extends GitHubService
 	/**
 	 * Create
 	 * 
-	 * @param $owner String (Optional) - The name of the organization, if organization not specified the repo will be created for the authenticated user.
+	 * @param $owner String - The name of the organization, if organization not specified the repo will be created for the authenticated user.
 	 * @param $repo String (Required) - The name of the repository.
 	 * @param $private boolean (Optional) - `true` makes the repository private, and
 	 * 	`false` makes it public.
@@ -208,7 +208,7 @@ class GitHubRepos extends GitHubService
 	 * @param $license_template String (Optional) - Desired LICENSE template to apply. Use the name of the template without the extension. For example, �mit� or �mozilla�.
 	 * @return GitHubFullRepo
 	 */
-	public function create($owner = null, $repo, $private = null, $has_issues = null, $has_wiki = null, $has_downloads = null, $default_branch = null, $description = null, $homepage = null, $team_id = null, $auto_init = null, $gitignore_template = null, $license_template = null)
+	public function create($owner, $repo, $private = null, $has_issues = null, $has_wiki = null, $has_downloads = null, $default_branch = null, $description = null, $homepage = null, $team_id = null, $auto_init = null, $gitignore_template = null, $license_template = null)
 	{
 		$data = array('name' => $repo);
 		

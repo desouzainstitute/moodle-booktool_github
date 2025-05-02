@@ -91,7 +91,7 @@ if ( ! $githubclient ) {
 }
 
 // Add the "owner" of this connection as the username from oAuth.
-$repodetails['owner'] = $githubuser->getLogin();
+$repodetails['owner'] = $githubuser->getLogin() ?? '';
 
 // If no repo yet configured, repo_details[ repo|path ] will not exist.
 
@@ -119,10 +119,10 @@ if ( $fromform = $form->get_data() ) {
 
             $change = true;
 
-            $repodetails['repo'] = trim( $fromform->repo );
-            $repodetails['path'] = trim( $fromform->path );
-            $repodetails['bookid'] = $book->id;
-            $repodetails['id'] = trim( $fromform->id );
+            $repodetails['repo'] = trim( $fromform->repo ) ?? '';
+            $repodetails['path'] = trim( $fromform->path ) ?? '';
+            $repodetails['bookid'] = $book->id ?? '';
+            $repodetails['id'] = trim( $fromform->id ) ?? '';
 
             if ( ! booktool_github_repo_exists($githubclient, $repodetails) ) {
                 print get_string( 'form_repo_not_exist_error', 'booktool_github',
