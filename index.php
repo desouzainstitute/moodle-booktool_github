@@ -114,8 +114,12 @@ if ( $fromform = $form->get_data() ) {
     if ( strcmp( $fromform->repo, $repodefault ) !== 0 &&
          strcmp( $fromform->path, $pathdefault ) !== 0 ) {
 
-        if ( strcmp( $fromform->repo, $repodetails['repo']) !== 0 ||
-             strcmp( $fromform->path, $repodetails['path']) !== 0 ) {
+        $repo1 = $fromform->repo ?? '';
+        $repo2 = $repodetails['repo'] ?? '';
+        $path1 = $fromform->path ?? '';
+        $path2 = $repodetails['path'] ?? '';
+
+        if (strcmp($repo1, $repo2) !== 0 || strcmp($path1, $path2) !== 0) {
 
             $change = true;
 
@@ -157,7 +161,6 @@ if ( $fromform = $form->get_data() ) {
         } else { // Didn't change the existing data.
             print "<h1>didn't change the data</h1>";
             print "<xmp> ";
-            var_dump( $fromform );
             print "</xmp>";
         }
     } else {  // Didn't change the default form data.
@@ -170,13 +173,14 @@ if ( $fromform = $form->get_data() ) {
 
 // Now show the rest of the form.
 
-$giturl = 'http://github.com/' . $repodetails['owner'] . '/' .
-            $repodetails['repo'].'/blob/master/'.$repodetails['path'];
-$repourl = 'http://github.com/' . $repodetails['owner'] . '/' .
-            $repodetails['repo'] . '//';
-$gituserurl = 'http://github.com/' . $repodetails['owner'];
-$rawgiturl = 'https://cdn.rawgit.com/' . $repodetails['owner'] . '/' .
-              $repodetails['repo'] . '/master/' . $repodetails['path'];
+$owner = isset($repodetails['owner']) ? $repodetails['owner'] : '';
+$repo  = isset($repodetails['repo']) ? $repodetails['repo'] : '';
+$path  = isset($repodetails['path']) ? $repodetails['path'] : '';
+
+$giturl = "http://github.com/$owner/$repo/blob/master/$path";
+$repourl = "http://github.com/$owner/$repo//";
+$gituserurl = "http://github.com/$owner";
+$rawgiturl = "https://cdn.rawgit.com/$owner/$repo/master/$path";
 
 $urls = ['book_url' => $bookurl->out(), 'git_url' => $giturl,
                'repo_url' => $repourl, 'git_user_url' => $gituserurl,
